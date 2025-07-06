@@ -98,7 +98,7 @@
  <div class="col-md-6">
      
    <label for="cc-name" class="form-label">Name on card</label>
-   <input type="text" class="form-control" id="cc-name" placeholder="">
+   <input name="card_holder_name" type="text" class="form-control" id="cc-name" placeholder="" required>
    <small class="text-muted">Full name as displayed on card</small>
    <div class="invalid-feedback">
      Name on card is required
@@ -108,7 +108,7 @@
 
  <div class="col-6">
    <label for="cc-number" class="form-label">Credit card number</label>
-   <input name="card_number" type="number" class="form-control" id="cc-number" placeholder="">
+   <input name="card_number" type="text" class="form-control" id="cc-number" placeholder="" required>
    <div class="invalid-feedback">
      Credit card number is required
    </div>
@@ -118,10 +118,10 @@
    <label for="cc-expiration" class="form-label">Expiration</label>
    <div class="row">
     <div class="col-md-6">
-      <input name="card_expiry_month" type="number" class="form-control" id="cc-expiration" placeholder="Month">
+      <input name="card_expiry_month" type="number" class="form-control" id="cc-expiration-month" placeholder="Month" min="1" max="12" required>
     </div>
     <div class="col-md-6">
-      <input name="card_expiry_year" type="number" class="form-control" id="cc-expiration" placeholder="Year">
+      <input name="card_expiry_year" type="number" class="form-control" id="cc-expiration-year" placeholder="Year" min="2024" max="2050" required>
     </div>
 
   </div>
@@ -135,7 +135,7 @@
 
  <div class="col-md-3">
    <label for="cc-cvv" class="form-label">CVV</label>
-   <input name="card_cvv" type="number" class="form-control" id="cc-cvv" placeholder="">
+   <input name="card_cvv" type="text" class="form-control" id="cc-cvv" placeholder="" maxlength="4" required>
    <div class="invalid-feedback">
      Security code required
    </div>
@@ -188,9 +188,21 @@
     var shown = this.options[this.selectedIndex].value == 'mobile_money';
     var shown2 = this.options[this.selectedIndex].value == 'card';
   
-      document.getElementById('hidden_div1').style.display = shown ? 'block' : 'none';
+    document.getElementById('hidden_div1').style.display = shown ? 'block' : 'none';
     document.getElementById('hidden_div2').style.display = shown2 ? 'block' : 'none';
     
+    // Set required attributes based on selected payment method
+    var mobileFields = document.querySelectorAll('#hidden_div1 input, #hidden_div1 select');
+    var cardFields = document.querySelectorAll('#hidden_div2 input');
+    
+    // Reset all required attributes
+    mobileFields.forEach(function(field) {
+      field.required = shown;
+    });
+    
+    cardFields.forEach(function(field) {
+      field.required = shown2;
+    });
   };
   
   
@@ -201,4 +213,19 @@
       onChange.apply(select, arguments);
     });
   }
+
+  // Add form validation for card number
+  document.getElementById('cc-number').addEventListener('input', function(e) {
+    // Remove any non-digit characters
+    this.value = this.value.replace(/\D/g, '');
+    
+    // Add spaces every 4 digits for better readability
+    this.value = this.value.replace(/(\d{4})(?=\d)/g, '$1 ');
+  });
+
+  // Add form validation for CVV
+  document.getElementById('cc-cvv').addEventListener('input', function(e) {
+    // Remove any non-digit characters
+    this.value = this.value.replace(/\D/g, '');
+  });
 </script></body>
